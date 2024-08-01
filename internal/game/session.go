@@ -36,7 +36,6 @@ func (s *Session) Run() {
 		select {
 		case <-time.NewTicker(time.Duration(5) * time.Second).C:
 			slog.Info("game session", slog.String("SessionID", s.ID), slog.Any("active players", s.Table.GetPlayersCount()))
-			// default:
 		}
 	}
 }
@@ -46,7 +45,6 @@ func (s *Session) Close(wg *sync.WaitGroup) error {
 
 	for _, p := range s.Table.Players {
 		if err := p.disconnect(); err != nil {
-			fmt.Println(err.Error(), "ALO")
 			return err
 		}
 	}
