@@ -86,22 +86,22 @@ var cardSuites = [4]cardSuit{Clubs, Diamonds, Hearts, Spades}
 
 const totalCards = 52
 
-type card struct {
+type Card struct {
 	suit  cardSuit
 	value cardValue
 }
 
 type Deck struct {
-	Cards [totalCards]card
+	Cards [totalCards]Card
 }
 
 func New() *Deck {
-	var cards [totalCards]card
+	var cards [totalCards]Card
 
 	i := 0
 	for _, s := range cardSuites {
 		for v := Two; v <= Ace; v++ {
-			c := card{suit: s, value: v}
+			c := Card{suit: s, value: v}
 			cards[i] = c
 			i++
 		}
