@@ -16,41 +16,40 @@ type engine struct {
 	tcp            net.Listener
 }
 
-var goker engine
-
-func Start() {
+func Start() *engine {
 	slog.Info("Start Goker Engine")
 
 	listener, err := net.Listen("tcp", ":7777")
 	if err != nil {
-		slog.Any("init TCP listener was failed", err)
-		return
+		slog.Info("init TCP listener was failed", slog.String("error", err.Error()))
+		return nil
 	}
 
-	goker = engine{
+	goker := engine{
 		tcp:            listener,
 		activeSessions: make(map[string]*game.Session),
-		mu:             sync.Mutex{},
 	}
 
 	go goker.seatPlayers()
+
+	return &goker
 }
 
-func Shutdown() error {
-	goker.mu.Lock()
+func (g *engine) Shutdown() error {
+	g.mu.Lock()
 
 	wg := sync.WaitGroup{}
-	wg.Add(len(goker.activeSessions))
+	wg.Add(len(g.activeSessions))
 
-	for _, s := range goker.activeSessions {
+	for _, s := range g.activeSessions {
 		go s.Close(&wg)
 	}
 
 	wg.Wait()
 
-	goker.mu.Unlock()
+	g.mu.Unlock()
 
-	err := goker.tcp.Close()
+	err := g.tcp.Close()
 	if err != nil {
 		slog.Any("error shutting down engine", err)
 		return err
@@ -62,13 +61,13 @@ func Shutdown() error {
 
 func (g *engine) seatPlayers() {
 	for {
-		conn, err := goker.tcp.Accept()
+		conn, err := g.tcp.Accept()
 		if err != nil {
 			slog.Any("failed dial TCP connection", err)
 			continue
 		}
 
-		go goker.play(conn)
+		go g.play(conn)
 	}
 }
 
@@ -79,7 +78,9 @@ func (g *engine) play(conn net.Conn) {
 	}
 
 	if table := g.findFreeTable(); table != nil {
+		g.mu.Lock()
 		table.AddPlayer(conn)
+		g.mu.Unlock()
 	} else {
 		g.seatPlayerOnNewTable(conn)
 	}
@@ -91,7 +92,7 @@ func (g *engine) seatPlayerOnNewTable(conn net.Conn) {
 	session := game.NewSession()
 	session.AddPlayer(conn)
 
-	goker.activeSessions[session.ID] = session
+	g.activeSessions[session.ID] = session
 
 	g.mu.Unlock()
 

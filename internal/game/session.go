@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"log/slog"
 	"net"
 	"sync"
@@ -13,6 +12,7 @@ import (
 type Session struct {
 	ID    string
 	Table *Table
+	mu    sync.Mutex
 }
 
 func NewSession() *Session {
@@ -26,6 +26,9 @@ func NewSession() *Session {
 }
 
 func (s *Session) AddPlayer(conn net.Conn) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
 	s.Table.AddPlayer(conn)
 }
 
@@ -34,7 +37,7 @@ func (s *Session) Run() {
 
 	for {
 		select {
-		case <-time.NewTicker(time.Duration(5) * time.Second).C:
+		case <-time.NewTicker(time.Duration(1) * time.Second).C:
 			slog.Info("game session", slog.String("SessionID", s.ID), slog.Any("active players", s.Table.GetPlayersCount()))
 		}
 	}

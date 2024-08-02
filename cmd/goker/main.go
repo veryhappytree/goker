@@ -14,9 +14,9 @@ func main() {
 	fmt.Println("♠♣goker♦♥")
 	logger.Setup()
 
-	go engine.Start()
+	goker := engine.Start()
 
-	gracefulShutdown(engine.Shutdown)
+	gracefulShutdown(goker.Shutdown)
 }
 
 func gracefulShutdown(ops ...func() error) {
