@@ -1,6 +1,7 @@
 package engine
 
 import (
+	"errors"
 	"goker/internal/game"
 	"log/slog"
 	"net"
@@ -72,6 +73,9 @@ play:
 		default:
 			conn, err := g.tcp.Accept()
 			if err != nil {
+				if errors.Is(err, net.ErrClosed) {
+					break play
+				}
 				slog.Error("failed dial TCP connection", slog.String("error", err.Error()))
 				continue
 			}

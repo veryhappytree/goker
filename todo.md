@@ -1,9 +1,10 @@
 - [x] shuffle deck
-- [] player
-- [] table
-- [] game
-- [] game session
+- [x] player
+- [x] table
+- [x] game
+- [x] game session
+- [] dealer
+- [] round simulation ?
 - [] p2p
 - [] encryption
 - [] ?
-  
