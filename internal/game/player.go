@@ -1,7 +1,6 @@
 package game
 
 import (
-	"goker/internal/deck"
 	"log/slog"
 	"net"
 
@@ -12,14 +11,14 @@ type player struct {
 	ID   string
 	conn net.Conn
 	// etc...
-	Hand []*deck.Card
+	Hand []*Card
 }
 
 func newPlayer(conn net.Conn) *player {
 	p := &player{
 		ID:   uuid.NewString(),
 		conn: conn,
-		Hand: make([]*deck.Card, 0),
+		Hand: make([]*Card, 0),
 	}
 
 	slog.Info("new player created ", slog.String("PlayerID", p.ID))

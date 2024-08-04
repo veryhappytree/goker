@@ -3,6 +3,7 @@
 - [x] table
 - [x] game
 - [x] game session
+- [] tests!
 - [] dealer
 - [] round simulation ?
 - [] p2p
