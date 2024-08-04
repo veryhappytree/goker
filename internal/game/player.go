@@ -12,14 +12,14 @@ type player struct {
 	ID   string
 	conn net.Conn
 	// etc...
-	Hands []*deck.Card
+	Hand []*deck.Card
 }
 
 func newPlayer(conn net.Conn) *player {
 	p := &player{
-		ID:    uuid.NewString(),
-		conn:  conn,
-		Hands: make([]*deck.Card, 0),
+		ID:   uuid.NewString(),
+		conn: conn,
+		Hand: make([]*deck.Card, 0),
 	}
 
 	slog.Info("new player created ", slog.String("PlayerID", p.ID))
