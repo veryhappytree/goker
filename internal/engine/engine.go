@@ -14,6 +14,7 @@ type engine struct {
 	asc            atomic.Int32
 	mu             sync.Mutex
 	tcp            net.Listener
+	shutdown       chan struct{}
 }
 
 func Start() *engine {
@@ -28,6 +29,7 @@ func Start() *engine {
 	goker := engine{
 		tcp:            listener,
 		activeSessions: make(map[string]*game.Session),
+		shutdown:       make(chan struct{}),
 	}
 
 	go goker.seatPlayers()
@@ -49,6 +51,8 @@ func (g *engine) Shutdown() error {
 
 	g.mu.Unlock()
 
+	close(g.shutdown)
+
 	err := g.tcp.Close()
 	if err != nil {
 		slog.Error("error shutting down engine", slog.String("error", err.Error()))
@@ -60,14 +64,20 @@ func (g *engine) Shutdown() error {
 }
 
 func (g *engine) seatPlayers() {
+play:
 	for {
-		conn, err := g.tcp.Accept()
-		if err != nil {
-			slog.Error("failed dial TCP connection", slog.String("error", err.Error()))
-			continue
-		}
+		select {
+		case <-g.shutdown:
+			break play
+		default:
+			conn, err := g.tcp.Accept()
+			if err != nil {
+				slog.Error("failed dial TCP connection", slog.String("error", err.Error()))
+				continue
+			}
 
-		go g.play(conn)
+			go g.play(conn)
+		}
 	}
 }
 
