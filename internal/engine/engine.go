@@ -1,7 +1,6 @@
 package engine
 
 import (
-	"fmt"
 	"goker/internal/game"
 	"log/slog"
 	"net"
@@ -62,13 +61,12 @@ func (g *engine) Shutdown() error {
 
 func (g *engine) seatPlayers() {
 	for {
-		fmt.Println("here")
 		conn, err := g.tcp.Accept()
 		if err != nil {
 			slog.Error("failed dial TCP connection", slog.String("error", err.Error()))
 			continue
 		}
-		fmt.Println("here2")
+
 		go g.play(conn)
 	}
 }
