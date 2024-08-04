@@ -3,9 +3,11 @@
 - [x] table
 - [x] game
 - [x] game session
-- [] tests!
+- [] test!
 - [] dealer
 - [] round simulation ?
+- [] bot
+- [] Nash Equilibrium Solver for Heads Up Push or Fold Texas Holdem
+- [] test!
 - [] p2p
 - [] encryption
-- [] ?
